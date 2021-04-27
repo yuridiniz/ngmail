@@ -1,0 +1,4 @@
+[submodule "third_part/libuv"]
+	path = third_part/libuv
+	url = https://github.com/libuv/libuv.git
+	branch = master

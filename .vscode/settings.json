@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "load_module.h": "c",
+        "string.h": "c",
+        "optional": "c",
+        "fstream": "c",
+        "istream": "c",
+        "ostream": "c",
+        "sstream": "c",
+        "type_traits": "c",
+        "thread.h": "c"
+    },
+}
