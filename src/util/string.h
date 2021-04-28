@@ -1,4 +1,7 @@
 
+#ifndef __STRING_T_H
+#define __STRING_T_H
+
 #include <stdlib.h>
 
 typedef struct string string_t;
@@ -20,6 +23,10 @@ void str_ncat(string_t *str, char *new_val, int size);
 
 void str_clear(string_t *str);
 
+int str_startwith(string_t *str, char *val);
+
 string_t * str_clone(string_t *str);
 
 void str_free(string_t *str);
+
+#endif

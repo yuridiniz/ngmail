@@ -69,6 +69,18 @@ void str_clear(string_t *str)
     str->len = 0;
 }
 
+int str_startwith(string_t *str, char *val)
+{
+    char* ptr = str->c_str;
+    do {
+        int equals = val == ptr;
+        if(!equals)
+            return 0;
+    }
+    while(val++ && ++ptr);
+
+    return 1;
+}
 string_t *str_clone(string_t *str)
 {
     return str_new_s_cap(str->c_str, str->len, str->capacity);

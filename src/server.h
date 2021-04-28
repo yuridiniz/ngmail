@@ -1,3 +1,6 @@
+#ifndef __SERVER_H
+#define __SERVER_H
+
 #include <uv.h>
 
 typedef struct client client_t;
@@ -26,4 +29,4 @@ int server_start_listener(server_t *server,
                         int (*on_accept_cb)(server_t*, client_t*),
                         void (*on_read_cb)(client_t*, ssize_t, const uv_buf_t*));
 
-
+#endif

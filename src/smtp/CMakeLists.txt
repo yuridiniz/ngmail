@@ -1,5 +1,6 @@
 set(smtp_src 
     smtp.c 
+    command_handler.c 
 )
 
 add_library(smtp STATIC ${smtp_src})
