@@ -21,8 +21,8 @@ server_t *server_new(char *ip, unsigned short port)
 }
 
 int server_start_listener(server_t *server, 
-                  int (*on_accept_cb)(server_t*, uv_tcp_t*), 
-                  int (*on_read_cb)(server_t*, uv_tcp_t*))
+                  int (*on_accept_cb)(server_t*, client_t*), 
+                  int (*on_read_cb)(server_t*, client_t*))
 {
     server->on_accept_cb = on_accept_cb;
     server->on_read_cb = on_read_cb;
@@ -60,10 +60,10 @@ static void on_new_connection(uv_stream_t *server, int status)
         return;
     }
 
-    uv_tcp_t *client = (uv_tcp_t *)malloc(sizeof(uv_tcp_t));
-    uv_tcp_init(server->loop, client);
+    client_t *client = (client_t *)malloc(sizeof(client_t));
+    uv_tcp_init(server->loop, &client->uv_client);
 
-    if (uv_accept(server, (uv_stream_t *)client) != 0)
+    if (uv_accept(server, (uv_stream_t *)&client->uv_client) != 0)
     {
         fprintf(stderr, "Accept: fail %s\n", uv_strerror(status));
         free(client);
