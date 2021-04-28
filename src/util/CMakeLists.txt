@@ -4,5 +4,3 @@ set(util_src
 )
 
 add_library(util STATIC ${util_src})
-
-include_directories(util "${CMAKE_SOURCE_DIR}/src/")

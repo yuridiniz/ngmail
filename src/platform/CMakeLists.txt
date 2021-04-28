@@ -6,5 +6,3 @@ set(platform_src
 )
 
 add_library(platform STATIC ${platform_src})
-
-include_directories(platform "${CMAKE_SOURCE_DIR}/src/")

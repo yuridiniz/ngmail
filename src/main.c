@@ -1,4 +1,4 @@
-#include "smtp.h"
+#include "smtp/smtp.h"
 #include <stdio.h>
 
 int main(int argc, char** argv) {

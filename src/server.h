@@ -16,6 +16,7 @@ struct server {
 struct client {
     uv_tcp_t uv_client;
     server_t * server;
+    void * data;
 };
 
 

@@ -12,6 +12,8 @@
         "stdlib.h": "c",
         "server.h": "c",
         "stdio.h": "c",
-        "vector": "c"
+        "vector": "c",
+        "smtp.h": "c",
+        "string": "c"
     },
 }

@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
 #define container_of(ptr, type, member) \
   ((type *) ((char *) (ptr) - offsetof(type, member)))
   
@@ -13,6 +12,8 @@ static void on_read_cb(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf);
 server_t *server_new(char *ip, unsigned short port)
 {
     server_t *server = (server_t *)malloc(sizeof(server_t));
+    server->loop.data = server;
+    server->uv_server.data = server;
 
     uv_loop_init(&server->loop);
     uv_ip4_addr(ip, port, &server->addr);
@@ -41,7 +42,7 @@ int server_start_listener(server_t *server,
 }
 
 static void on_read_cb(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf) {
-    client_t * client = container_of(stream, client_t, uv_client);
+    client_t * client = stream->data;
     
     if(client->server->on_read_cb != NULL) {
         client_t * move = client;
@@ -66,16 +67,17 @@ static void on_new_connection(uv_stream_t *server, int status)
     client_t *client = (client_t *)malloc(sizeof(client_t));
     uv_tcp_init(server->loop, &client->uv_client);
 
+
     if (uv_accept(server, (uv_stream_t *)&client->uv_client) != 0)
     {
         fprintf(stderr, "Accept: fail %s\n", uv_strerror(status));
         free(client);
         return;
     }
-    
-    uv_tcp_t * tcpserver = (uv_tcp_t*)server;
-    server_t * myserver = container_of(tcpserver, server_t, uv_server);
 
+    client->uv_client.data = client;
+    
+    server_t * myserver = (server_t*)server->data;
     client->server = myserver;
 
     if(myserver->on_accept_cb != NULL && myserver->on_accept_cb(myserver, client) != 0)

@@ -1,22 +1,10 @@
 #include "smtp.h"
-#include "server.h"
-#include "util/string.h"
 #include "string.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-#define container_of(ptr, type, member) \
-    ((type *)((char *)(ptr)-offsetof(type, member)))
-
 static int on_accept(server_t *server, client_t *client);
 static void on_message(client_t *client, ssize_t nsize, const uv_buf_t *buf);
-
-struct smtp_session
-{
-    int id;
-    client_t *client;
-    string_t *buffer;
-};
 
 int smtp_init()
 {
@@ -30,32 +18,42 @@ int smtp_init()
 
 static void on_message(client_t *client, ssize_t nsize, const uv_buf_t *buf)
 {
-    struct smtp_session * session = container_of(&client, struct smtp_session, client);
-    string_t * buffer = session->buffer;
+    struct smtp_session *session = client->data;
+    string_t *buffer = session->buffer;
 
-    str_ncat(buffer, buf->base, buf->len);
+    str_cat(buffer, buf->base);
 
-    if(session->buffer->len >= 4) {
-        // Assumindo lentidoes, pode vir mais de uma informação ao mesmo tempo
+    if (session->buffer->len >= 2)
+    {
+        // Assumindo lentidoes, pode vir mais de uma informação ao mesmo tempo, ou seja
+        // Concatenando 2 comandos em uma única string
+        // Ex: COMMAND abc \r\n COMMAND2 xyz \r\n
         // Porem, não sei se deve ser um comportamento esperado do protocolo
         // Caso seja, terá que dar um split no texto e adicionar o sobressalente ao buffer
-        int isend = strncmp(buf->base[buf->len - 4], "CRLF",4);
+        char *ends = &buffer->c_str[((int)buffer->len) - 2];
+        int isend = strncmp(ends, "\r\n", 2);
 
-        if(isend == 0) {
+        if (isend == 0)
+        {
+            string_t * buffer_param = str_clone(buffer);
+            str_clear(buffer);
+
+            printf("[debug] Processando comando: %s", buffer_param->c_str);
+            
+
             // Processa comando
         }
     }
-
-    printf("%s", buf->base);
-    fflush(stdout);
 }
 
 static int on_accept(server_t *server, client_t *client)
 {
-    struct smtp_session *session = (struct smtp_session*) malloc(sizeof(struct smtp_session));
+    struct smtp_session *session = (struct smtp_session *)malloc(sizeof(struct smtp_session));
     session->client = client;
-    session->buffer = str_new_cap("", 512);
+    session->buffer = str_new_cap("", 1024);
     session->id = 1;
+
+    client->data = session;
 
     return 0;
 }
