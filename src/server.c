@@ -22,12 +22,10 @@ server_t *server_new(char *ip, unsigned short port)
 
 int server_start_listener(server_t *server, 
                   int (*on_accept_cb)(server_t*, client_t*), 
-                  int (*on_read_cb)(server_t*, client_t*))
+                  void (*on_read_cb)(client_t*, ssize_t, const uv_buf_t*))
 {
     server->on_accept_cb = on_accept_cb;
     server->on_read_cb = on_read_cb;
-    server->id = 1000;
-
 
     uv_tcp_init(&server->loop, &server->uv_server);
     uv_tcp_bind(&server->uv_server, (const struct sockaddr *)&server->addr, 0);
@@ -43,7 +41,12 @@ int server_start_listener(server_t *server,
 }
 
 static void on_read_cb(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf) {
-    printf("%s", buf->base);
+    client_t * client = container_of(stream, client_t, uv_client);
+    
+    if(client->server->on_read_cb != NULL) {
+        client_t * move = client;
+        client->server->on_read_cb(move, nread, buf);
+    }
 }
 
 static void my_alloc_cb(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf)
@@ -69,9 +72,12 @@ static void on_new_connection(uv_stream_t *server, int status)
         free(client);
         return;
     }
-
+    
     uv_tcp_t * tcpserver = (uv_tcp_t*)server;
     server_t * myserver = container_of(tcpserver, server_t, uv_server);
+
+    client->server = myserver;
+
     if(myserver->on_accept_cb != NULL && myserver->on_accept_cb(myserver, client) != 0)
     {
         fprintf(stderr, "%s\n", "Conexão não aceita por parte do servidor");

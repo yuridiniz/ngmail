@@ -11,6 +11,7 @@
         "thread.h": "c",
         "stdlib.h": "c",
         "server.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "vector": "c"
     },
 }
