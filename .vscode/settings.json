@@ -8,6 +8,9 @@
         "ostream": "c",
         "sstream": "c",
         "type_traits": "c",
-        "thread.h": "c"
+        "thread.h": "c",
+        "stdlib.h": "c",
+        "server.h": "c",
+        "stdio.h": "c"
     },
 }
