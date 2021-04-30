@@ -12,7 +12,11 @@ static void __thread_server(void *arg)
 {
     server_t *server = (server_t *)arg;
 
-    server_start_listener(server, on_accept, on_message);
+    int err = server_start_listener(server, on_accept, on_message);
+    if (err != 0)
+    {
+        fprintf(stderr, "[err] Fail to start SMTP: %s\n", uv_err_name(err));
+    }
 }
 
 int smtp_init(const char *ip, unsigned short port)

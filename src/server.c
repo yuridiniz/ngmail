@@ -42,17 +42,15 @@ int server_start_listener(server_t *server,
 
     uv_tcp_init(&server->loop, &server->uv_server);
     int res = uv_tcp_bind(&server->uv_server, (const struct sockaddr *)&server->addr, 0);
-    if (res)
+    if (res != 0)
     {
-        fprintf(stderr, "Error bind %s\n", uv_strerror(res));
-        return 1;
+        return res;
     }
 
     int result = uv_listen((uv_stream_t *)&server->uv_server, 1024, on_new_connection);
     if (result)
     {
-        fprintf(stderr, "Listen error %s\n", uv_strerror(result));
-        return 1;
+        return result;
     }
 
     return uv_run(&server->loop, UV_RUN_DEFAULT);
