@@ -21,8 +21,6 @@ int smtp_init(const char *ip, unsigned short port)
 
     printf("[info] Starting SMTP server on port: %d\n", port);
 
-    __thread_server(server);
-
     pthread_t server_thread;
     pthread_create(&server_thread, NULL, &__thread_server, server);
 }
