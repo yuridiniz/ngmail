@@ -7,8 +7,9 @@
 enum smtp_session_state {
     HELO_PENDING,
     HELO_DONE,
-    MAIL_FROM,
     MAIL_TO,
+    RCPT_TO,
+    SETTING_COMPLETE,
     WRITTEN_DATA,
     DATA_COMPLETE,
 };
@@ -23,6 +24,6 @@ struct smtp_session
 };
 
 
-int smtp_init();
+int smtp_init(const char * ip, unsigned short port);
 
 #endif

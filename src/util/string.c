@@ -71,16 +71,20 @@ void str_clear(string_t *str)
 
 int str_startwith(string_t *str, char *val)
 {
-    char* ptr = str->c_str;
-    do {
-        int equals = val == ptr;
-        if(!equals)
-            return 0;
-    }
-    while(val++ && ++ptr);
+    char *ptr = str->c_str;
+    while (*val != '\0')
+    {
+        int equals = *val - *ptr;
+        if (equals != 0)
+            return equals;
 
-    return 1;
+        ++val;
+        ++ptr;
+    }
+
+    return 0;
 }
+
 string_t *str_clone(string_t *str)
 {
     return str_new_s_cap(str->c_str, str->len, str->capacity);

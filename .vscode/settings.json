@@ -15,6 +15,7 @@
         "vector": "c",
         "smtp.h": "c",
         "string": "c",
-        "command_handler.h": "c"
+        "command_handler.h": "c",
+        "http.h": "c"
     },
 }
