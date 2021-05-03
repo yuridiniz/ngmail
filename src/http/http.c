@@ -7,7 +7,7 @@
 static int on_accept(server_t *server, client_t *client);
 static void on_message(client_t *client, ssize_t nsize, const uv_buf_t *buf);
 
-static void __thread_server(void *arg)
+static void * __thread_server(void *arg)
 {
     server_t *server = (server_t *)arg;
 
@@ -16,15 +16,19 @@ static void __thread_server(void *arg)
     {
         fprintf(stderr, "[err] Fail to start HTTP: %s\n", uv_err_name(err));
     }
+
+    return 0;
 }
 
-int http_init(const char *ip, unsigned short port)
+int http_init(char *ip, unsigned short port)
 {
     server_t *server = server_new(ip, port);
     printf("[info] Starting HTTP server on port: %d\n", port);
 
     pthread_t server_thread;
     pthread_create(&server_thread, NULL, &__thread_server, server);
+
+    return 0;
 }
 
 static void on_message(client_t *client, ssize_t nsize, const uv_buf_t *buf)

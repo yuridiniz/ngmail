@@ -56,15 +56,22 @@ int server_start_listener(server_t *server,
     return uv_run(&server->loop, UV_RUN_DEFAULT);
 }
 
+
+void cb(uv_write_t* req, int status) {
+    free(req);
+    /* Logic which handles the write result */
+}
+
+
 void server_write(client_t *client, char *data, int len)
 {
-    uv_write_t req1;
+    uv_write_t *req1 = malloc(sizeof(uv_write_t));
 
     uv_buf_t b[] = {
         {.base = data, .len = len},
     };
 
-    uv_write(&req1, (uv_stream_t *)&client->uv_client, b, 1, NULL);
+    uv_write(req1, (uv_stream_t *)&client->uv_client, b, 1, cb);
 }
 
 static void on_read_cb(uv_stream_t *stream, ssize_t nread, const uv_buf_t *buf)

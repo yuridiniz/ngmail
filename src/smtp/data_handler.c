@@ -8,31 +8,30 @@
 #include "platform/unistd.h"
 
 void smtp_data_handler(struct smtp_session* session, string_t * data) {
-    if(session->state == RCPT_TO) {
-        session->state = WRITTEN_DATA;
-        return;
+    if(session->data_buffer == 0) {
+        session->file_buffer_name = str_new("mailincommingXXXXXX");
+        session->data_buffer = mkstemp(session->file_buffer_name->c_str);
     }
-
-    if(session->state != WRITTEN_DATA) {
-        //send error
-        return;
-    }
-
-    if(session->data_buffer == NULL) {
-         session->data_buffer = tmpfile();
-    }
-
-    FILE *pfile = session->data_buffer;
-    int pid = fileno(pfile);
 
     struct stat stats;
-    fstat(pid, &stats);
+    fstat(session->data_buffer, &stats);
 
     float sizeInMb = stats.st_size / (float)(1024 * 1024);
     if(sizeInMb < 10) {
-        fwrite(data->c_str, sizeof(char), data->len, pfile);
-        fflush(pfile);
+        write(session->data_buffer, data->c_str, data->len);
+
+        char *stop_command = "\r\n.\r\n";
+
+        if(str_endswith(data, stop_command, strlen(stop_command)) == 0)  {
+            session->state = DATA_COMPLETE;
+
+            //TODO Enfileirar mensagem
+        }
+
     } else {
-        fclose(pfile);
+        close(session->data_buffer);
+        remove(session->file_buffer_name->c_str);
+
+        session->data_buffer = 0;
     }
 }

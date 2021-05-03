@@ -20,10 +20,11 @@ struct smtp_session
     int id;
     client_t *client;
     string_t *command_buffer;
-    FILE * data_buffer;
+    string_t *file_buffer_name;
+    int data_buffer;
 };
 
 
-int smtp_init(const char * ip, unsigned short port);
+int smtp_init(char * ip, unsigned short port);
 
 #endif

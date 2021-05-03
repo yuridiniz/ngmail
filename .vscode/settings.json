@@ -16,6 +16,14 @@
         "smtp.h": "c",
         "string": "c",
         "command_handler.h": "c",
-        "http.h": "c"
+        "http.h": "c",
+        "*.tcc": "c",
+        "array": "c",
+        "string_view": "c",
+        "helo_handler.h": "c",
+        "data_handler.h": "c",
+        "unistd.h": "c",
+        "windows.h": "c",
+        "winapifamily.h": "c"
     },
 }

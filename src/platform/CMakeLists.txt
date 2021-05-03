@@ -1,5 +1,7 @@
 set(PLAT "${CMAKE_SOURCE_DIR}/src/platform/${platform_host}")
 
+message("Linking... ${PLAT}")
+
 set(platform_src  
     ${PLAT}/load_module.c
     ${PLAT}/thread.c

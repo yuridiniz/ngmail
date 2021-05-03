@@ -16,6 +16,18 @@ static DWORD timespec_to_ms(const struct timespec *abstime)
     return t;
 }
 
+int pthread_create(pthread_t *thread, pthread_attr_t *attr, void *(*start_routine)(void *), void *arg)
+{
+    (void)attr;
+
+    if (thread == NULL || start_routine == NULL)
+        return 1;
+
+    *thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)start_routine, arg, 0, NULL);
+    if (*thread == NULL)
+        return 1;
+    return 0;
+}
 
 int pthread_join(pthread_t thread, void **value_ptr)
 {

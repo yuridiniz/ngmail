@@ -85,6 +85,26 @@ int str_startwith(string_t *str, char *val)
     return 0;
 }
 
+
+int str_endswith(string_t *str, char *data, int val_len)
+{
+    char *ptr = &str->c_str[str->len];
+    char *val = &data[val_len];
+
+    while (val_len > 0)
+    {
+        --val_len;
+        --val;
+        --ptr;
+
+        int equals = *val - *ptr;
+        if (equals != 0)
+            return equals;
+    }
+
+    return 0;
+}
+
 string_t *str_clone(string_t *str)
 {
     return str_new_s_cap(str->c_str, str->len, str->capacity);

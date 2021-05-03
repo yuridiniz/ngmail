@@ -1,5 +1,6 @@
 
 #include "command_handler.h"
+#include "server.h"
 #include "stdio.h"
 
 int handler_helo_if_request(struct smtp_session *session, string_t *command)
@@ -7,13 +8,19 @@ int handler_helo_if_request(struct smtp_session *session, string_t *command)
     if (str_startwith(command, "HELO") == 0)
     {
         session->state = HELO_DONE;
-        printf("%s", "HELO COMMNAD...\n");
+
+        char *response = "250 OK\r\n";
+        server_write(session->client, response, strlen(response));
+
         return 0;
     }
-    else if (str_startwith(command, "HLEO") == 0)
+    else if (str_startwith(command, "EHLO") == 0)
     {
-        session->state = HELO_DONE;
-        printf("%s", "HLEO COMMNAD...\n");
+        // session->state = HELO_DONE;
+
+        char *response = "502 Command not recognized\r\n";
+        server_write(session->client, response, strlen(response));
+
         return 0;
     }
 
@@ -22,6 +29,9 @@ int handler_helo_if_request(struct smtp_session *session, string_t *command)
 
 void handler_smpt_command(struct smtp_session *session, string_t *command)
 {
+    printf("%s", command->c_str);
+    fflush(stdout);
+
     switch (session->state)
     {
 
@@ -33,12 +43,12 @@ void handler_smpt_command(struct smtp_session *session, string_t *command)
         if (handler_helo_if_request(session, command) == 0)
             return;
 
-        if (str_startwith(command, "MAIL TO:") == 0)
+        if (str_startwith(command, "MAIL FROM:") == 0)
         {
             session->state = MAIL_TO;
-            printf("%s", "MAIL TO:\n");
 
-            //handler
+            char *response = "250 OK\r\n";
+            server_write(session->client, response, strlen(response));
         }
 
         break;
@@ -50,7 +60,9 @@ void handler_smpt_command(struct smtp_session *session, string_t *command)
         if (str_startwith(command, "RCPT TO:") == 0)
         {
             session->state = RCPT_TO;
-            printf("%s", "RCPT_TO...\n");
+
+            char *response = "250 OK\r\n";
+            server_write(session->client, response, strlen(response));
         }
 
         break;
@@ -64,15 +76,14 @@ void handler_smpt_command(struct smtp_session *session, string_t *command)
         if (str_startwith(command, "DATA") == 0)
         {
             session->state = WRITTEN_DATA;
-            printf("%s", "DATA...\n");
+            char *response = "354\r\n";
+            server_write(session->client, response, strlen(response));
         }
 
         break;
 
     case WRITTEN_DATA:
-
-        printf("%s", command->c_str);
-        fflush(stdout);
+        smtp_data_handler(session, command);
 
         break;
 

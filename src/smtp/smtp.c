@@ -5,10 +5,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef _WIN32
+#include "wsipv6ok.h"
+#endif
+
 static int on_accept(server_t *server, client_t *client);
 static void on_message(client_t *client, ssize_t nsize, const uv_buf_t *buf);
 
-static void __thread_server(void *arg)
+static void *__thread_server(void *arg)
 {
     server_t *server = (server_t *)arg;
 
@@ -19,7 +23,7 @@ static void __thread_server(void *arg)
     }
 }
 
-int smtp_init(const char *ip, unsigned short port)
+int smtp_init(char *ip, unsigned short port)
 {
     server_t *server = server_new(ip, port);
 
@@ -69,8 +73,21 @@ static int on_accept(server_t *server, client_t *client)
     session->command_buffer = str_new_cap("", 1024);
     session->id = 1;
     session->state = HELO_PENDING;
+    session->data_buffer = 0;
 
     client->data = session;
+
+    struct sockaddr_in addr = {0};
+    int len;
+
+    int res = uv_tcp_getpeername(&client->uv_client, (struct sockaddr*)&addr, &len);
+
+    char *ip = inet_ntoa(addr.sin_addr);
+    printf(ip);
+
+
+    string_t *response = str_new("220\r\n");
+    server_write(session->client, response->c_str, response->len);
 
     return 0;
 }

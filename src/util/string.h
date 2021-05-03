@@ -25,6 +25,8 @@ void str_clear(string_t *str);
 
 int str_startwith(string_t *str, char *val);
 
+int str_endswith(string_t *str, char *val, int val_len);
+
 string_t * str_clone(string_t *str);
 
 void str_free(string_t *str);

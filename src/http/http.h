@@ -4,6 +4,6 @@
 #include "server.h"
 #include "util/string.h"
 
-int http_init(const char * ip, unsigned short port);
+int http_init(char * ip, unsigned short port);
 
 #endif
