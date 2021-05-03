@@ -1,19 +1,10 @@
 include_directories("${CMAKE_SOURCE_DIR}/src/")
 
 find_package(libuv REQUIRED)
-IF (LIBUV_FOUND)
+if (LIBUV_FOUND)
     message(${LIBUV_INCLUDE_DIRS})
     include_directories("${LIBUV_INCLUDE_DIRS}")
-    # LINK_DIRECTORIES(${LIBUV_LIBRARY_DIRS})
-ENDIF (LIBUV_FOUND)
-
-if(UNIX)
-    # Refatorar isso no FIND
-    # Try to find the header
-    FIND_PATH(libpthread_dir NAMES pthread.h)
-    # Try to find the library
-    FIND_LIBRARY(libpthread_lib NAMES pthread)
-endif()
+endif (LIBUV_FOUND)
 
 add_subdirectory(platform)
 add_subdirectory(util)
@@ -34,7 +25,7 @@ target_link_libraries(ngmail http)
 target_link_libraries(ngmail ${LIBUV_LIBRARY})
 
 if(UNIX)
-    target_link_libraries(ngmail ${libpthread_lib})
+    target_link_libraries(ngmail pthread)
 endif()
 
 if(WIN32)
